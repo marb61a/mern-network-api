@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const uuidv1 = require("uuid/v1");
+const crypto = require("crypto");
 const { ObjectId } = mongoose.Schema;
 
 const userSchema = new mongoose.Schema({
@@ -30,6 +32,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  resetPassword: {
+    data: String,
+    default: ""
+  },
   role: {
     type: String,
     default: "subscriber"
@@ -39,13 +45,16 @@ const userSchema = new mongoose.Schema({
 // UserSchema methods
 userSchema.methods = {
   authenticate: function(plainText) {
-
+    return this.encryptPassword(plainText) === this.hashed_password;
   },
   encryptPassword: function(password) {
     if(!password) return "";
 
     try {
-
+      return crypto
+        .createHmac("sha1", this.salt)
+        .update(password)
+        .digest("hex");
     } catch {
       return "";
     }
