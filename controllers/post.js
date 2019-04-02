@@ -7,8 +7,32 @@ exports.postById = (req, res, next, id) => {
 
 };
 
+// With pagination
 exports.getPosts = async(req, res) => {
+  // Gets the page from req.query or use the default of 1
+  const currentPage = req.query.page || 1;
 
+  // Returns 3 posts per page
+  const perPage = 6;
+  let totalItems;
+
+  const posts = await Post.find()
+    .countDocuments()
+    .then(count => {
+      totalItems = count;
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .populate("comments", "text created")
+        .populate("comments.postedBy", "_id name")
+        .populate("postedBy", "_id name")
+        .select("_id title body created likes")
+        .limit(perPage)
+        .sort({ created: -1 });
+    })
+    .then(posts => {
+      res.status(200).json(posts);
+    })
+    .catch(err => console.log(err));
 }
 
 exports.createPost = (req, res, next) => {
