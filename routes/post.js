@@ -1,7 +1,7 @@
 const express = require("express");
 const { 
   getPosts, 
-  createPost ,
+  createPost,
   postById
 } = require("../controllers/post");
 
