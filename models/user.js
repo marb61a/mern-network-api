@@ -32,6 +32,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  following: [{
+    type: ObjectId,
+    ref: "User" 
+  }],
+  followers: [{
+    type: ObjectId,
+    ref: "User"
+  }],
   resetPassword: {
     data: String,
     default: ""
@@ -41,6 +49,26 @@ const userSchema = new mongoose.Schema({
     default: "subscriber"
   }
 });
+
+/* 
+  Virtual fields which exist only logically and are not persisted in the
+  database and are not written to a document collection
+*/ 
+userSchema
+  .virtual(password)
+  .set(function() {
+    // Create a temporary variable
+    this._password = password;
+
+    // Generate a timestamp
+    this.salt = uuidv1();
+
+    // Encrypt the password()
+    this.hashed_password = this.encryptPassword(password);
+  })
+  .get(function() {
+    return this._password;
+  });
 
 // UserSchema methods
 userSchema.methods = {
