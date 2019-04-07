@@ -96,3 +96,36 @@ exports.postsByUser = (req, res) => {
       res.json(posts);
     });
 };
+
+exports.updatePost = (req, res, next) => {
+  let form = new formidable.IncomingForm();
+  form.keepExtensions = true;
+
+  form.parse(req, (err, fields, files) => {
+    if(err) {
+      return res.status(400).json({
+        error: "A photo could not be uploaded"
+      });
+    }
+
+    // Save post
+    let post = req.profile;
+    post = _.extend(post, fields);
+    post.updated = Date.now();
+
+    if(files.photo) {
+      post.photo.data = fs.readFileSync(files.photo.path);
+      post.photo.contentType = files.photo.type;
+    }
+
+    post.save((err, result) => {
+      if(err) {
+        return res.status(400).json({
+          error: err
+        });
+      }
+
+      res.json(post);
+    });
+  });
+};
