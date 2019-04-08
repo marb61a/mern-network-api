@@ -65,3 +65,34 @@ exports.requireSignin = expressJwt({
   secret: process.env.JWT_SECRET,
   userProperty: "auth"
 });
+
+exports.forgotPassword = (req, res) => {
+  if(!req.body) {
+    return res.status(400).json({
+      message: "No request body"
+    });
+  }
+
+  if(!req.body.email) {
+    return res.status(400).json({
+      message: "There is no email in the request body"
+    });
+  }
+
+  console.log("Forgotten password, finding the user whose email matches");
+  const { email } = req.body;
+  console.log("signin req.body", email);
+
+  // Find the user by email
+  User.findOne({ email }, (err, user) => {
+    if(err || !user) {
+      return res.status("401").json({
+        error: "The user matching that email does not exist!"
+      });
+    }
+
+    // Generate a token with userId and secret
+    
+  });
+
+};
