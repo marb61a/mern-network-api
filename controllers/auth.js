@@ -92,7 +92,34 @@ exports.forgotPassword = (req, res) => {
     }
 
     // Generate a token with userId and secret
-    
+    const token = jwt.sign(
+      { _id: user._id, iss: "NODEAPI" },
+      process.env.JWT_SECRET
+    );
+
+    // Email Data
+    const emailData = {
+      from: "",
+      to: email,
+      subject: "Instructions for resetting password",
+      text: `Please use the following link to reset your password: ${
+        process.env.CLIENT_URL
+      }/reset-password/${token}`,
+      html: `<p>Please use the following link to reset your password:</p> 
+      <p>${ process.env.CLIENT_URL }/reset-password/${token}</p>`
+    };
+
+    return user.updateOne({ resetPasswordLink: token }, (err, success) => {
+      if(err) {
+        return res.json({ message: err });
+      } else {
+        sendEmail(emailData);
+        return res.status(200).json({
+          message: `Email has been sent to ${email}. 
+          Follow the instructions to reset your password.`
+        });
+      }
+    });
   });
 
 };
