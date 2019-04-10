@@ -83,3 +83,19 @@ exports.userPhoto = (req, res, next) => {
 
   next();
 };
+
+exports.deleteUser = (req, res, next) => {
+  let user = req.profile;
+
+  user.remove((err, user) => {
+    if(err) {
+      return res.status(400).json({
+        error: err
+      });
+    }
+
+    return res.json({
+      message: "User deleted successfully"
+    });
+  });
+};
