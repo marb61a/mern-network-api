@@ -33,6 +33,10 @@ router.delete("/post/:postId", requireSignin, isPoster, deletePost);
 // Photo
 router.get("/post/photo/:postId", photo);
 
+// If any route contains :userId, the app will first execute userById
+router.param("userId", userById);
+
+// If any route contains :postId, the app will first execute postById
 router.param("postId", postById);
 
 module.exports = router;

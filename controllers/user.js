@@ -99,3 +99,12 @@ exports.deleteUser = (req, res, next) => {
     });
   });
 };
+
+// Follow and unfollow methods
+exports.addFollower = (req, res) => {
+  User.findByIdAndUpdate()
+}
+
+exports.findPeople = (req, res) => {
+
+};
