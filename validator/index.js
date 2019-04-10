@@ -57,3 +57,27 @@ exports.userSignupValidator = (req, res, next) => {
     // Proceed to next middleware
     next();
 };
+
+exports.passwordResetValidator = (req, res, next) => {
+  // Check for a password
+  req.check("newPassword", "Password is required").notEmpty();
+  req.check("newPassword")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 chars long")
+    .matches(/\d/)
+    .withMessage("must contain a number")
+    .withMessage("Password must contain a number");
+  
+  // Error Checking
+  const errors = req.validationErrors();
+  // If there are errors show them starting with the first
+  if(errors) {
+    const firstError = errors.map(error => error.msg)[0];
+    return res.status(400).json({ 
+      error: firstError 
+    });
+  }
+  
+  // Proceed to next middleware
+  next();
+}
