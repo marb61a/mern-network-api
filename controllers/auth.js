@@ -123,3 +123,40 @@ exports.forgotPassword = (req, res) => {
   });
 
 };
+
+/* 
+  Allows user to reset password, find the user in the db with the
+  resetPasswordLink, the user model resetPasswordLink must match
+  token. If the resetPasswordLink token from both user and req.body
+  then the user is the correct one
+*/
+exports.resetPassword = (req, res) => {
+  const { resetPasswordLink, newPassword } = req.body;
+
+  User.findOne({ resetPasswordLink }, (err, user) => {
+    if(err || !user) {
+      return res.status("401").json({
+        error: "Invalid Link!"
+      });
+    }
+
+    const updatedFields = {
+      password: newPassword,
+      resetPasswordLink: ""
+    };
+
+    user = _.extend(user, updatedFields);
+    user.updated = Date.now();
+
+    user.save((err, result) => {
+      if (err) {
+        return res.status(400).json({
+          error: err
+        });
+      }
+      res.json({
+        message: `Great! Now you can login with your new password.`
+      });
+    });
+  });
+};
