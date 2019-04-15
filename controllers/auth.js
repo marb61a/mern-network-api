@@ -171,9 +171,38 @@ exports.socialLogin = (req, res) => {
       user.save();
 
       // Generate a token (with user id and secret)
+      const token = jwt.sign(
+        { _id: user._id, iss: "NODEAPI" },
+        process.env.JWT_SECRET
+      );
+      res.cookie("t", token, { expire: new Date() + 9999 });
 
+      // Return response with user & token to frontend
+      const { _id, name, email } = user;
+      return res.json({
+        token,
+        user: { _id, name, email }
+      });
     } else {
+      // Update an existing user with new social login and info
+      req.profile = user;
+      user = _.extend(user, req.body);
+      user.updated = Date.now();
+      user.save();
 
+      // Generate a token (with user id and secret)
+      const token = jwt.sign(
+        { _id: user._id, iss: "NODEAPI" },
+        process.env.JWT_SECRET
+      );
+      res.cookie("t", token, { expire: new Date() + 9999 });
+
+      // Return response with user & token to frontend
+      const { _id, name, email } = user;
+      return res.json({
+        token,
+        user: { _id, name, email }
+      });
     }
 
   });
