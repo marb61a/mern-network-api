@@ -160,3 +160,21 @@ exports.resetPassword = (req, res) => {
     });
   });
 };
+
+exports.socialLogin = (req, res) => {
+  // Try signup by finding user with req.email
+  let user = User.findOne({ email: req.body.email }, (err, user) => {
+    if(err || !user) {
+      // Create a new user and login
+      user = new User(req.body);
+      req.profile = user;
+      user.save();
+
+      // Generate a token (with user id and secret)
+
+    } else {
+
+    }
+
+  });
+};

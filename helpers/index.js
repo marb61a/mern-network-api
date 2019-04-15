@@ -4,7 +4,14 @@ const defaultEmailData = { from: "" };
 
 exports.sendEmail = emailData => {
   const transporter = nodeMailer.createTransport({
-
+    host: "",
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+        user: "",
+        pass: ""
+    }
   });
 
   return transporter
